@@ -14,7 +14,7 @@ def receipts_list(request):
 
     Важно: queryset фильтруется ТОЛЬКО по request.user. Никакие query-
     параметры (?user_id=, ?all=1) не расширяют выборку — их просто нет
-    в коде. Это защищает от случайной утечки чужих чеков.
+    в коде.
     """
     qs = (
         Receipt.objects
@@ -43,4 +43,7 @@ def receipts_list(request):
         for row in qs
     ]
 
-    return JsonResponse({"count": len(results), "results": results})
+    return JsonResponse(
+        {"count": len(results), "results": results},
+        json_dumps_params={"ensure_ascii": False},
+    )

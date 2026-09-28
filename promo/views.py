@@ -21,12 +21,7 @@ def _is_ajax(request) -> bool:
 @login_required
 @require_http_methods(["GET", "POST"])
 def receipt_create(request):
-    """Форма регистрации чека.
-
-    GET  — показать пустую форму.
-    POST — провалидировать и сохранить. Для AJAX-запросов отвечаем JSON'ом
-    (успех или список ошибок по полям), для обычных — редиректим в кабинет.
-    """
+    """Форма регистрации чека."""
     if request.method == "POST":
         form = ReceiptForm(request.POST, request.FILES, user=request.user)
 
@@ -49,6 +44,7 @@ def receipt_create(request):
                         },
                     },
                     status=201,
+                    json_dumps_params={"ensure_ascii": False},
                 )
             return redirect("promo:cabinet")
 
@@ -56,6 +52,7 @@ def receipt_create(request):
             return JsonResponse(
                 {"ok": False, "errors": form.errors.get_json_data()},
                 status=400,
+                json_dumps_params={"ensure_ascii": False},
             )
     else:
         form = ReceiptForm(user=request.user)
@@ -65,7 +62,7 @@ def receipt_create(request):
 
 @login_required
 def cabinet(request):
-    """Личный кабинет: список чеков текущего пользователя, пагинация по 10."""
+    """Личный кабинет: список чеков пользователя, пагинация по 10."""
     qs = (
         Receipt.objects
         .filter(user=request.user)
