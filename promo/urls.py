@@ -1,10 +1,14 @@
-"""URL'ы приложения promo.
+"""URL'ы приложения promo."""
 
-Пока пустой список — заполним после того, как появятся views и api.
-Пустой urlpatterns (а не отсутствие переменной) обязателен: Django
-падает на include() модуля без urlpatterns.
-"""
+from django.urls import path
+
+from . import api, views
+
 
 app_name = "promo"
 
-urlpatterns: list = []
+urlpatterns = [
+    path("", views.receipt_create, name="receipt_create"),
+    path("cabinet/", views.cabinet, name="cabinet"),
+    path("api/receipts/", api.receipts_list, name="api_receipts"),
+]
