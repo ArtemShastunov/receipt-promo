@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Чек на удачу{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header class="site-header">
+    <div class="container header-inner">
+        <a class="logo" href="{% url 'promo:receipt_create' %}">Чек&nbsp;на&nbsp;удачу</a>
+        {% if user.is_authenticated %}
+            <nav class="nav">
+                <a href="{% url 'promo:receipt_create' %}">Регистрация чека</a>
+                <a href="{% url 'promo:cabinet' %}">Личный кабинет</a>
+                {% if user.is_staff %}
+                    <a href="/admin/">Админка</a>
+                {% endif %}
+                <form action="{% url 'logout' %}" method="post" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="link-button">Выйти ({{ user.username }})</button>
+                </form>
+            </nav>
+        {% endif %}
+    </div>
+</header>
+
+<main class="container main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        Период акции:
+        <strong>{{ PROMO_START|date:"d.m.Y" }}</strong> —
+        <strong>{{ PROMO_END|date:"d.m.Y" }}</strong>.
+        Минимальная сумма чека —
+        <strong>{{ PROMO_MIN_AMOUNT|floatformat:0 }} ₽</strong>.
+    </div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

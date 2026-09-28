@@ -1,0 +1,68 @@
+{% extends "promo/base.html" %}
+{% load static %}
+
+{% block title %}Личный кабинет — Чек на удачу{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="cabinet-head">
+        <h1>Мои чеки</h1>
+        <a class="button primary" href="{% url 'promo:receipt_create' %}">Зарегистрировать чек</a>
+    </div>
+
+    {% if page.object_list %}
+    <table class="receipts">
+        <thead>
+        <tr>
+            <th>Дата покупки</th>
+            <th>Сумма</th>
+            <th>Статус</th>
+            <th>Причина отказа</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for r in page.object_list %}
+            <tr>
+                <td data-label="Дата покупки">{{ r.purchase_datetime|date:"d.m.Y H:i" }}</td>
+                <td data-label="Сумма">{{ r.amount|floatformat:2 }} ₽</td>
+                <td data-label="Статус">
+                    <span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span>
+                </td>
+                <td data-label="Причина отказа">{{ r.reject_reason|default:"—" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if page.has_other_pages %}
+        <nav class="pagination">
+            {% if page.has_previous %}
+                <a href="?page={{ page.previous_page_number }}">← Назад</a>
+            {% else %}
+                <span class="disabled">← Назад</span>
+            {% endif %}
+
+            <span>Стр. {{ page.number }} из {{ paginator.num_pages }}</span>
+
+            {% if page.has_next %}
+                <a href="?page={{ page.next_page_number }}">Вперёд →</a>
+            {% else %}
+                <span class="disabled">Вперёд →</span>
+            {% endif %}
+        </nav>
+    {% endif %}
+
+    {% else %}
+        <p class="muted">Пока нет зарегистрированных чеков.</p>
+        <p>
+            <a class="button primary" href="{% url 'promo:receipt_create' %}">
+                Зарегистрировать первый чек
+            </a>
+        </p>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/cabinet.js' %}"></script>
+{% endblock %}

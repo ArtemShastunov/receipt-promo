@@ -1,0 +1,90 @@
+{% extends "promo/base.html" %}
+{% load static %}
+
+{% block title %}Регистрация чека — Чек на удачу{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Регистрация чека</h1>
+    <p class="muted">
+        Загрузите данные чека, полученного при покупке
+        в период акции с {{ PROMO_START|date:"d.m.Y" }}
+        по {{ PROMO_END|date:"d.m.Y" }}.
+    </p>
+
+    <form id="receipt-form" class="form" method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="field">
+            <label for="{{ form.fn.id_for_label }}">ФН (фискальный номер)</label>
+            {{ form.fn }}
+            <small class="hint">16 цифр — указаны на чеке.</small>
+            <div class="error" data-error-for="fn"></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="field">
+                <label for="{{ form.fd.id_for_label }}">ФД (номер документа)</label>
+                {{ form.fd }}
+                <div class="error" data-error-for="fd"></div>
+            </div>
+            <div class="field">
+                <label for="{{ form.fp.id_for_label }}">ФП (фискальный признак)</label>
+                {{ form.fp }}
+                <div class="error" data-error-for="fp"></div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="field">
+                <label for="{{ form.purchase_datetime.id_for_label }}">Дата и время покупки</label>
+                {{ form.purchase_datetime }}
+                <div class="error" data-error-for="purchase_datetime"></div>
+            </div>
+            <div class="field">
+                <label for="{{ form.amount.id_for_label }}">Сумма, ₽</label>
+                {{ form.amount }}
+                <div class="error" data-error-for="amount"></div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="qr-input">Вставить строку из QR-кода (необязательно)</label>
+            <div class="qr-row">
+                <input id="qr-input" class="input" type="text"
+                       placeholder="t=...&s=...&fn=...&i=...&fp=...">
+                <button type="button" id="qr-parse" class="button ghost">Разобрать</button>
+            </div>
+            <small class="hint" id="qr-hint">Строка заполнит поля ФН, ФД, ФП, сумму и дату автоматически.</small>
+        </div>
+
+        <div class="field">
+            <label for="{{ form.photo.id_for_label }}">Фото чека (необязательно)</label>
+            {{ form.photo }}
+            <small class="hint">JPG/PNG/WEBP, до {{ PROMO_MAX_PHOTO_MB }} МБ.</small>
+            <div class="error" data-error-for="photo"></div>
+        </div>
+
+        <div class="form-errors" id="form-errors" hidden></div>
+        <div class="form-success" id="form-success" hidden></div>
+
+        <div class="actions">
+            <button type="submit" class="button primary">Отправить на проверку</button>
+            <a href="{% url 'promo:cabinet' %}" class="button ghost">Мои чеки</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.PROMO = {
+        minAmount: {{ PROMO_MIN_AMOUNT|floatformat:0 }},
+        start: "{{ PROMO_START|date:'c' }}",
+        end: "{{ PROMO_END|date:'c' }}",
+        submitUrl: "{% url 'promo:receipt_create' %}",
+        cabinetUrl: "{% url 'promo:cabinet' %}"
+    };
+</script>
+<script src="{% static 'js/form.js' %}"></script>
+{% endblock %}

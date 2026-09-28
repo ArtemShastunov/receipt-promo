@@ -1,0 +1,34 @@
+{% extends "promo/base.html" %}
+
+{% block title %}Вход — Чек на удачу{% endblock %}
+
+{% block content %}
+<section class="card card-narrow">
+    <h1>Вход</h1>
+    <p class="muted">Войдите, чтобы регистрировать чеки и смотреть их статус.</p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="field">
+            <label for="{{ form.username.id_for_label }}">Логин</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="error">{{ form.username.errors|join:" " }}</div>{% endif %}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.password.id_for_label }}">Пароль</label>
+            {{ form.password }}
+            {% if form.password.errors %}<div class="error">{{ form.password.errors|join:" " }}</div>{% endif %}
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="button primary">Войти</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
